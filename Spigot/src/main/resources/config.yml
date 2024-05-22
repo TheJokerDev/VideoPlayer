@@ -1,0 +1,7 @@
+settings:
+  prefix: "&bVideoPlayer&8 » &f"
+
+videos:
+  saymon_says:
+    url: 'https://www.youtube.com/watch?v=LtzmGXB-0YU'
+    volume: 65

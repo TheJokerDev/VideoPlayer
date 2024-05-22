@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+}
+
+apply from: "https://raw.githubusercontent.com/henkelmax/mod-gradle-scripts/${mod_gradle_script_version}/taskutils.gradle"
+
+group = 'me.j0keer'
+version = '0.0.1'
+
+repositories {
+    mavenCentral()
+}
+
+tasks.register('buildSpigot') {
+    group = 'BUILDING'
+    description = 'Each build script'
+    doLast {
+        runGradleTasks(['Spigot:clean', 'Spigot:build'], [])
+    }
+}
+
+tasks.register('buildSpigotNC') {
+    group = 'BUILDING'
+    description = 'Each build script'
+    doLast {
+        runGradleTasks(['Spigot:build'], [])
+    }
+}
+
+tasks.register('buildFabric') {
+    group = 'BUILDING'
+    description = 'Each build script'
+    doLast {
+        runGradleTasks(['Fabric:clean', 'Fabric:build'], [])
+    }
+}
+
+tasks.register('buildFabricNC') {
+    group = 'BUILDING'
+    description = 'Each build script'
+    doLast {
+        runGradleTasks(['Fabric:build'], [])
+    }
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}

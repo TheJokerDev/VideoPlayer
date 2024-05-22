@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "videoplayer",
+  "version": "${version}",
+  "name": "VideoPlayer",
+  "description": "Display Video on Minecraft",
+  "authors": [
+    "J0keer"
+  ],
+  "contact": {
+    "repo": "https://github.com/SpreenStudio/VideoPlayer",
+    "homepage": "https://modrinth.com/mod/VideoPlayer",
+    "sources": "https://github.com/SpreenStudio/VideoPlayer",
+    "issues": "https://github.com/SpreenStudio/VideoPlayer/issues"
+  },
+  "license": "GNU",
+  "icon": "assets/videoplayer/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "me.j0keer.videoplayer.client.ClientHandler"
+    ],
+    "main": [
+      "me.j0keer.videoplayer.VideoPlayer"
+    ]
+  },
+  "mixins": [
+    "videoplayer.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.21",
+    "fabric": "*",
+    "minecraft": ">=1.20.1",
+    "watermedia": "*",
+    "java": ">=17"
+  }
+}

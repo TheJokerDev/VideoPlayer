@@ -1,0 +1,16 @@
+name: VideoPlayer
+version: '${version}'
+main: me.j0keer.videoplayer.VideoPlayer
+api-version: '1.20'
+
+softdepend:
+  - LuckPerms
+  - PlaceholderAPI
+
+commands:
+  video:
+
+libraries:
+  - org.projectlombok:lombok:1.18.32
+  - io.netty:netty-buffer:4.1.109.Final
+  - io.netty:netty-handler:4.1.109.Final
