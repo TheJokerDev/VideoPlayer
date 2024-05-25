@@ -49,13 +49,6 @@ tasks.withType(JavaCompile).configureEach {
     }
 }
 
-tasks.withType(Jar).tap {
-    configureEach {
-        archiveFileName = project.build_name+"-"+project.version+".jar"
-        archiveBaseName = project.build_name + "-" + project.version
-    }
-}
-
 publishing {
     repositories {
         maven {
