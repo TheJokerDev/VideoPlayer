@@ -34,8 +34,10 @@ public class VideoScreen extends Screen {
 
     // STATUS
     int tick = 0;
+    int closingOnTick = -1;
+    float fadeLevel = 0;
     boolean started;
-
+    boolean closing = false;
     // TOOLS
     private final SyncVideoPlayer player;
 
@@ -52,11 +54,9 @@ public class VideoScreen extends Screen {
     public VideoScreen(String video, int volume) {
         super(Text.of(""));
         MinecraftClient mc = MinecraftClient.getInstance();
-        this.volume = mc.options.getSoundVolume(SoundCategory.AMBIENT);
-        Constants.LOGGER.info("Volume: " + this.volume);
+        this.volume = mc.options.getSoundVolume(SoundCategory.MASTER);
 
-        mc.options.getSoundVolumeOption(SoundCategory.AMBIENT).setValue(0.001);
-        Constants.LOGGER.info("Volume set off: " + 0.001f);
+        mc.options.getSoundVolumeOption(SoundCategory.MASTER).setValue(0.001);
 
         VideoPlayer.SCREEN = this;
 
@@ -82,8 +82,6 @@ public class VideoScreen extends Screen {
     public void resume() {
         this.player.play();
     }
-    int stoppedAttempts = 0;
-    int otherAttempts = 0;
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
@@ -91,40 +89,27 @@ public class VideoScreen extends Screen {
 
         videoTexture = player.prepareTexture();
 
-        boolean playingState = player.isPlaying() && player.getRawPlayerState().equals(State.PLAYING);
-        State playerState = player.getRawPlayerState();
+        videoTexture = player.prepareTexture();
 
-        if (playingState) {
-            if (stoppedAttempts > 0) stoppedAttempts = 0;
-            if (otherAttempts > 0) otherAttempts = 0;
-            renderTexture(context, videoTexture);
-        } else if (player.isStopped() || player.isEnded()) {
-            if (stoppedAttempts < 10) {
-                stoppedAttempts++;
-                return;
-            }
-            this.close();
-        } else {
-            boolean close = false;
-
-            if (playerState.equals(State.ERROR)) {
-                close = true;
-            } else if (playerState.equals(State.NOTHING_SPECIAL)) {
-                otherAttempts++;
-                if (otherAttempts > 80) {
-                    close = true;
-                }
-            }
-
-            if (close) {
-                this.close();
+        if (player.isEnded() || player.isStopped() || player.getRawPlayerState().equals(State.ERROR)) {
+            if (fadeLevel == 1 || closing) {
+                closing = true;
+                if (closingOnTick == -1) closingOnTick = tick + 20;
+                if (tick >= closingOnTick) fadeLevel = Math.max(fadeLevel - (delta / 8), 0.0f);
+                renderBlackBackground(context);
+                if (fadeLevel == 0) close();
                 return;
             }
         }
 
+        boolean playingState = player.isPlaying() && player.getRawPlayerState().equals(State.PLAYING);
+        fadeLevel = (playingState) ? Math.max(fadeLevel - (delta / 8), 0.0f) : Math.min(fadeLevel + (delta / 16), 1.0f);
+        if (playingState || player.isStopped() || player.isEnded()) {
+            renderTexture(context, videoTexture);
+        }
+
         // DEBUG RENDERING
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
-            ClientHandler.log("State: " + playerState.name() + " | Attempts: "+(stoppedAttempts + otherAttempts));
             draw(context, String.format("State: %s", player.getRawPlayerState().name()), getHeightCenter(-12));
             draw(context, String.format("Time: %s (%s) / %s (%s)", FORMAT.format(new Date(player.getTime())), player.getTime(), FORMAT.format(new Date(player.getDuration())), player.getDuration()), getHeightCenter(0));
             draw(context, String.format("Media Duration: %s (%s)", FORMAT.format(new Date(player.getMediaInfoDuration())), player.getMediaInfoDuration()), getHeightCenter(12));
@@ -133,6 +118,12 @@ public class VideoScreen extends Screen {
 
     private int getHeightCenter(int offset) {
         return (height / 2) + offset;
+    }
+
+    private void renderBlackBackground(DrawContext stack) {
+        RenderSystem.enableBlend();
+        stack.fill(0, 0, width, height, WaterMediaAPI.math_colorARGB((int) (fadeLevel * 255), 0, 0, 0));
+        RenderSystem.disableBlend();
     }
 
     private void draw(DrawContext stack, String text, int height) {
@@ -187,13 +178,10 @@ public class VideoScreen extends Screen {
     @Override
     public void close() {
         super.close();
-        stoppedAttempts = 0;
-        otherAttempts = 0;
         if (started) {
             this.player.stop();
             started = false;
-            Constants.LOGGER.info("Volume set on: " + this.volume);
-            MinecraftClient.getInstance().options.getSoundVolumeOption(SoundCategory.AMBIENT).setValue(volume);
+            MinecraftClient.getInstance().options.getSoundVolumeOption(SoundCategory.MASTER).setValue(volume);
             GlStateManager._deleteTexture(videoTexture);
             player.release();
         }

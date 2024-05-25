@@ -4,7 +4,7 @@ plugins {
 apply plugin: 'maven-publish'
 apply from: "https://raw.githubusercontent.com/henkelmax/mod-gradle-scripts/${mod_gradle_script_version}/taskutils.gradle"
 
-group = 'me.j0keer'
+group = 'me.j0keer.videoplayer'
 version = '0.0.1'
 
 repositories {
@@ -54,16 +54,16 @@ publishing {
             name = "GitHubPackages"
             url = "https://maven.pkg.github.com/thejokerdev/videoplayer"
             credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
+                username = "TheJokerDev"
+                password = "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"
             }
         }
     }
 
 
     publications {
-        maven(MavenPublication) {
-            from components.java
+        gpr(MavenPublication) {
+            from(components.java)
         }
     }
 }

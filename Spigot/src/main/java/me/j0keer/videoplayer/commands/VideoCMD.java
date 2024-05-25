@@ -42,7 +42,6 @@ public record VideoCMD(VideoPlayer plugin) implements CommandExecutor, TabComple
             case "list" -> {
                 BaseComponent[] prefix = TextComponent.fromLegacyText(plugin.getUtils().ct(plugin.getPrefix()+"&aVideos available:"));
                 List<BaseComponent[]> components = new ArrayList<>() {{add(prefix);}};
-                plugin.getUtils().sendMSG(sender, "{prefix}&aVideos available:");
                 for (String video : getVideos()) {
                     TextComponent text = new TextComponent(TextComponent.fromLegacyText(plugin.getUtils().ct(" &7- &f" + video)));
                     text.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/video play @a " + video));
@@ -61,12 +60,13 @@ public record VideoCMD(VideoPlayer plugin) implements CommandExecutor, TabComple
                     plugin.getUtils().sendMSG(sender, "{prefix}&cPlayer not found!");
                     return true;
                 }
-                if (!getVideos().contains(video)) {
+                boolean isUrl = video.startsWith("http://") || video.startsWith("https://");
+                if (!isUrl && !getVideos().contains(video)) {
                     plugin.getUtils().sendMSG(sender, "{prefix}&cVideo not found!");
                     return true;
                 }
-                String url = plugin.getConfig().getString("videos." + video+".url");
-                int volume = plugin.getConfig().get("videos." + video + ".volume") == null ? 65 : plugin.getConfig().getInt("videos." + video + ".volume");
+                String url = isUrl ? video : plugin.getConfig().getString("videos." + video+".url");
+                int volume = isUrl || plugin.getConfig().get("videos." + video + ".volume") == null ? 65 : plugin.getConfig().getInt("videos." + video + ".volume");
 
                 if (args.length == 4) {
                     String volumeArg = args[3];
