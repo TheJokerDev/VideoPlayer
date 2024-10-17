@@ -1,15 +1,10 @@
 plugins {
-    id 'fabric-loom' version '1.1-SNAPSHOT'
+    id 'fabric-loom' version '1.8-SNAPSHOT'
     id 'maven-publish'
 }
 
 version = project.mod_version
 group = project.maven_group
-
-base {
-    archivesName = project.build_name+"-"+project.mod_version
-    archivesBaseName = project.build_name
-}
 
 repositories {
     mavenCentral()
@@ -19,6 +14,7 @@ repositories {
             includeGroup "curse.maven"
         }
     }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -34,15 +30,21 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modImplementation "curse.maven:watermedia-869524:4748769"
+    implementation "com.github.WaterMediaTeam.watermedia:build:$watermedia_version"
 }
 
 processResources {
     inputs.property "version", project.version
+    inputs.property "watermedia_version", watermedia_version
+    inputs.property "minecraft_version", minecraft_version
+    inputs.property "fabric_version", fabric_version
+    inputs.property "loader_version", loader_version
+    inputs.property "mod_id", mod_id
+    inputs.property "mod_name", mod_name
     filteringCharset "UTF-8"
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version
+        expand "version": project.version, "minecraft_version": minecraft_version, "fabric_version": fabric_version, "loader_version": loader_version, "watermedia_version": watermedia_version, "mod_id": mod_id, "mod_name": mod_name
     }
 }
 
@@ -59,6 +61,22 @@ java {
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
-    //archivesBaseName = project.archives_base_name
+    archivesBaseName = project.archives_base_name
     withSourcesJar()
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}" }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+    }
 }

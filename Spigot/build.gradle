@@ -2,8 +2,8 @@ plugins {
     id 'java'
 }
 apply plugin: 'maven-publish'
-group = 'me.j0keer.videoplayer'
-version = '0.0.1'
+group = 'me.j0keer.mediaplayer'
+version = '1.0.0'
 
 repositories {
     mavenCentral()
@@ -29,6 +29,8 @@ dependencies {
     compileOnly 'io.netty:netty-buffer:4.1.109.Final'
     compileOnly 'io.netty:netty-handler:4.1.109.Final'
 
+    compileOnly('org.apache.commons:commons-lang3:3.12.0')
+
 }
 
 def targetJavaVersion = 17
@@ -49,24 +51,10 @@ tasks.withType(JavaCompile).configureEach {
     }
 }
 
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = "https://maven.pkg.github.com/thejokerdev/videoplayer"
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
-                println "GitHubPackages Publish Artifact:\n\tusername=$username\n\ttoken=$password"
-            }
-        }
-    }
-
-
-    publications {
-        gpr(MavenPublication) {
-            from(components.java)
-        }
+tasks.withType(Jar).tap {
+    configureEach {
+        archiveFileName = project.build_name+"-"+project.version+".jar"
+        archiveBaseName = project.build_name + "-" + project.version
     }
 }
 

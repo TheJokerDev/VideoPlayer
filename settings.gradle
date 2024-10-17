@@ -9,6 +9,6 @@ pluginManagement {
 }
 
 
-rootProject.name = 'VideoPlayer'
+rootProject.name = 'MediaPlayer'
 include ':Spigot'
 include ':Fabric'

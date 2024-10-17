@@ -1,6 +1,6 @@
-name: VideoPlayer
+name: MediaPlayer
 version: '${version}'
-main: me.j0keer.videoplayer.VideoPlayer
+main: me.j0keer.mediaplayer.MediaPlayer
 api-version: '1.20'
 
 softdepend:
@@ -14,3 +14,4 @@ libraries:
   - org.projectlombok:lombok:1.18.32
   - io.netty:netty-buffer:4.1.109.Final
   - io.netty:netty-handler:4.1.109.Final
+  - org.apache.commons:commons-lang3:3.12.0

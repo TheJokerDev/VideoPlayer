@@ -1,3 +1,6 @@
-saymon_says:
-  url: 'https://www.youtube.com/watch?v=LtzmGXB-0YU'
-  volume: 65
+videos:
+  default:
+    url: "{local}/botones.mp4"
+    fallback: "https://www.youtube.com/watch?v=qyBcf184Mdw"
+    volume: 45
+    loop: false
