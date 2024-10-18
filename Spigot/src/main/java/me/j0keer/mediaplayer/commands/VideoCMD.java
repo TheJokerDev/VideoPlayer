@@ -25,6 +25,11 @@ public record VideoCMD(MediaPlayer plugin) implements CommandExecutor, TabComple
             return true;
         }
         String sub = strings[0];
+        if(sub.equalsIgnoreCase("reload")) {
+            plugin.reloadConfig();
+            sendMSG(commandSender, "{prefix}&aConfiguración recargada.");
+            return true;
+        }
         if (sub.equalsIgnoreCase("list")){
             BaseComponent[] prefix = TextComponent.fromLegacyText(plugin.getUtils().ct(plugin.getPrefix()+"&aVideos disponibles:"));
             List<BaseComponent[]> components = new ArrayList<>() {{add(prefix);}};
@@ -224,7 +229,7 @@ public record VideoCMD(MediaPlayer plugin) implements CommandExecutor, TabComple
 
     public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] args) {
         if (args.length == 1){
-            return List.of("play", "stop", "volume", "list");
+            return StringUtil.copyPartialMatches(args[0], List.of("play", "stop", "volume", "reload", "list"), new ArrayList<>());
         }
         if (args.length == 2 && (List.of("play", "stop", "volume").contains(args[0]))) {
             List<String> completions = new ArrayList<>(Arrays.asList("@a", "@e", "@p", "@r", "@s"));
