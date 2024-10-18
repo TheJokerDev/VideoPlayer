@@ -3,7 +3,7 @@ plugins {
 }
 apply plugin: 'maven-publish'
 group = 'me.j0keer.mediaplayer'
-version = '1.0.0'
+version = '1.0.1'
 
 repositories {
     mavenCentral()

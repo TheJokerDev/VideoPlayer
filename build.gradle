@@ -5,7 +5,7 @@ plugins {
 apply from: "https://raw.githubusercontent.com/henkelmax/mod-gradle-scripts/${mod_gradle_script_version}/taskutils.gradle"
 
 group = 'me.j0keer'
-version = '0.0.1'
+version = '1.0.1'
 
 repositories {
     mavenCentral()
