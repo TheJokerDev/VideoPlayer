@@ -11,6 +11,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
@@ -342,8 +343,8 @@ public record VideoCMD(MediaPlayer plugin) implements CommandExecutor, TabComple
         }
     }
 
-    public Configuration getFile(){
-        return plugin.getConfig();
+    public ConfigurationSection getFile(){
+        return plugin.getConfig().getConfigurationSection("videos");
     }
 
 }
