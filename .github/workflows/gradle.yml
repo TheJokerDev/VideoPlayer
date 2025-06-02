@@ -44,4 +44,4 @@ jobs:
             Fabric/build/libs/*.jar
             Spigot/build/libs/*.jar
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.JAVA_TOKEN }}
