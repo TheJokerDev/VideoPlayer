@@ -1,9 +1,6 @@
 name: CI
 
-on:
-  push:
-    tags:
-      - 'v*' # Para dispararse cuando hagas un tag como v1.0.0
+on: [push]
 
 jobs:
   build:
