@@ -1,6 +1,4 @@
-plugins {
-    id 'java'
-}
+plugins {}
 
 apply from: "https://raw.githubusercontent.com/henkelmax/mod-gradle-scripts/${mod_gradle_script_version}/taskutils.gradle"
 
@@ -41,13 +39,4 @@ tasks.register('buildFabricNC') {
     doLast {
         runGradleTasks(['Fabric:build'], [])
     }
-}
-
-dependencies {
-    testImplementation platform('org.junit:junit-bom:5.9.1')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-}
-
-test {
-    useJUnitPlatform()
 }
