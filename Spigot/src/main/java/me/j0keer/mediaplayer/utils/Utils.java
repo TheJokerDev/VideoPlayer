@@ -1,7 +1,6 @@
 package me.j0keer.mediaplayer.utils;
 
 import me.j0keer.mediaplayer.MediaPlayer;
-import me.j0keer.mediaplayer.netty.FriendlyByteBuf;
 import net.luckperms.api.model.user.User;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -86,42 +85,5 @@ public record Utils(MediaPlayer plugin) {
             }
         }
         return players;
-    }
-
-    public void playVideo(List<Player> players, String video, int volume){
-        FriendlyByteBuf buf = new FriendlyByteBuf();
-        try {
-            buf.writeUtf(video);
-            buf.writeInt(volume);
-            players.forEach(p->p.sendPluginMessage(plugin(), "videoplayer:networking", buf.array()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            buf.clear();
-        }
-    }
-
-    public void stopVideo(List<Player> players){
-        FriendlyByteBuf buf = new FriendlyByteBuf();
-        try {
-            buf.writeUtf("stop");
-            players.forEach(p->p.sendPluginMessage(plugin(), "videoplayer:unshow", buf.array()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            buf.clear();
-        }
-    }
-
-    public void setVolume(List<Player> players, int volume){
-        FriendlyByteBuf buf = new FriendlyByteBuf();
-        try {
-            buf.writeInt(volume);
-            players.forEach(p->p.sendPluginMessage(plugin(), "videoplayer:volume", buf.array()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            buf.clear();
-        }
     }
 }

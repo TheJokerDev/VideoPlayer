@@ -1,9 +1,10 @@
 plugins {
     id 'java'
+    id("io.freefair.lombok") version "8.13.1"
 }
 apply plugin: 'maven-publish'
 group = 'me.j0keer.mediaplayer'
-version = '1.0.1'
+version = mod_version
 
 repositories {
     mavenCentral()
@@ -18,19 +19,11 @@ repositories {
 }
 
 dependencies {
-    compileOnly "org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT"
+    compileOnly "org.spigotmc:spigot-api:1.20.6-R0.1-SNAPSHOT"
 
     // Utils
-    compileOnly 'org.projectlombok:lombok:1.18.32'
-    annotationProcessor 'org.projectlombok:lombok:1.18.32'
-
     compileOnly 'net.luckperms:api:5.4'
-
-    compileOnly 'io.netty:netty-buffer:4.1.109.Final'
-    compileOnly 'io.netty:netty-handler:4.1.109.Final'
-
     compileOnly('org.apache.commons:commons-lang3:3.12.0')
-
 }
 
 def targetJavaVersion = 17
@@ -51,11 +44,8 @@ tasks.withType(JavaCompile).configureEach {
     }
 }
 
-tasks.withType(Jar).tap {
-    configureEach {
-        archiveFileName = project.build_name+"-"+mod_version+".jar"
-        archiveBaseName = project.build_name + "-" + mod_version
-    }
+base {
+    archivesName.set(project.build_name)
 }
 
 processResources {

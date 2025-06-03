@@ -14,8 +14,8 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import me.j0keer.mediaplayer.Main;
 import me.j0keer.mediaplayer.config.Configuration;
-import me.j0keer.mediaplayer.network.PacketHandler;
 import me.j0keer.mediaplayer.util.StringUtil;
+import net.minecraft.text.Text;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -234,6 +234,7 @@ public class VideoCommand extends CMD {
         }
 
         JsonObject json = new JsonObject();
+        json.addProperty("action", "play");
         json.addProperty("url", video);
         json.addProperty("fallback", fallback);
         json.addProperty("volume", volume);
@@ -241,7 +242,7 @@ public class VideoCommand extends CMD {
         json.addProperty("fadeOut", fadeOut);
         json.addProperty("loop", loop);
         players.forEach(p -> {
-            PacketHandler.sendPlayVideo(p, json);
+            p.sendMessage(Text.of("[mediaplayer] "+ json), false);
         });
 
         String player = players.size() == 1 ? players.get(0).getName().getString() : "múltiples jugadores";
@@ -257,7 +258,12 @@ public class VideoCommand extends CMD {
             return Command.SINGLE_SUCCESS;
         }
 
-        players.forEach(PacketHandler::sendStopVideo);
+        JsonObject json = new JsonObject();
+        json.addProperty("action", "stop");
+
+        players.forEach(p -> {
+            p.sendMessage(Text.of("[mediaplayer] "+ json), false);
+        });
 
         String player = players.size() == 1 ? players.get(0).getName().getString() : "múltiples jugadores";
         sendMSG(context.getSource(),true, "Deteniendo video para "+player+".");
@@ -271,7 +277,12 @@ public class VideoCommand extends CMD {
             return Command.SINGLE_SUCCESS;
         }
 
-        players.forEach(PacketHandler::sendPauseVideo);
+        JsonObject json = new JsonObject();
+        json.addProperty("action", "pause");
+
+        players.forEach(p -> {
+            p.sendMessage(Text.of("[mediaplayer] "+ json), false);
+        });
 
         String player = players.size() == 1 ? players.get(0).getName().getString() : "múltiples jugadores";
         sendMSG(context.getSource(),true, "Pausando video para "+player+".");
@@ -325,7 +336,11 @@ public class VideoCommand extends CMD {
         int finalFadeTime = fadeTime;
 
         players.forEach(p -> {
-            PacketHandler.sendVideoVolume(p, finalVolume, finalFadeTime);
+            JsonObject json = new JsonObject();
+            json.addProperty("action", "volume");
+            json.addProperty("volume", finalVolume);
+            json.addProperty("time", finalFadeTime);
+            p.sendMessage(Text.of("[mediaplayer] "+ json), false);
         });
 
         String player = players.size() == 1 ? players.get(0).getName().getString() : "múltiples jugadores";

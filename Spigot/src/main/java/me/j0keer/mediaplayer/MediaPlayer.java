@@ -45,7 +45,6 @@ public class MediaPlayer extends JavaPlugin {
         }
 
         loadCmds();
-        registerOutgoingChannel();
 
         ms = System.currentTimeMillis() - ms;
         console("{prefix}&aEnabled MediaPlayer in " + ms + "ms!");
@@ -58,14 +57,6 @@ public class MediaPlayer extends JavaPlugin {
         getCommand("video").setExecutor(videoCMD);
         getCommand("video").setTabCompleter(videoCMD);
         console("{prefix}  &aCommand &f/video &aloaded!");
-    }
-
-    public void registerOutgoingChannel() {
-        console("{prefix}Registering outgoing channels...");
-        getServer().getMessenger().registerOutgoingPluginChannel(this, "mediaplayer:networking");
-        getServer().getMessenger().registerOutgoingPluginChannel(this, "mediaplayer:unshow");
-        getServer().getMessenger().registerOutgoingPluginChannel(this, "mediaplayer:volume");
-        console("{prefix}  &aOutgoing channels registered!");
     }
 
     @Override

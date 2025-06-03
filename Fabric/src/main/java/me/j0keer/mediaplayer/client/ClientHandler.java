@@ -7,7 +7,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import me.j0keer.mediaplayer.Main;
 import me.j0keer.mediaplayer.client.gui.VideoScreen;
-import me.j0keer.mediaplayer.network.PacketHandler;
 import me.j0keer.mediaplayer.util.KeyBinding;
 
 import java.util.ArrayList;
@@ -32,6 +31,5 @@ public class ClientHandler implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         KeyBinding.register();
-        PacketHandler.registerClient();
     }
 }

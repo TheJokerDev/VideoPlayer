@@ -1,10 +1,11 @@
 plugins {
     id 'fabric-loom' version '1.10-SNAPSHOT'
     id 'maven-publish'
+    id("io.freefair.lombok") version "8.13.1"
 }
 
-version = project.mod_version
-group = project.maven_group
+version = "${mod_version}"
+group = 'me.j0keer.mediaplayer'
 
 repositories {
     mavenCentral()
@@ -18,9 +19,6 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.projectlombok:lombok:1.18.28'
-    include 'org.projectlombok:lombok:1.18.28'
-    annotationProcessor('org.projectlombok:lombok:1.18.28')
 
     implementation group: 'org.yaml', name: 'snakeyaml', version: '2.0'
     include group: 'org.yaml', name: 'snakeyaml', version: '2.0'
@@ -61,6 +59,9 @@ java {
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
-    archivesBaseName =  project.build_name
     withSourcesJar()
+}
+
+base {
+    archivesName.set(project.build_name)
 }

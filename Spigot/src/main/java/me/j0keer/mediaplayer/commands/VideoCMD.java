@@ -2,7 +2,6 @@ package me.j0keer.mediaplayer.commands;
 
 import com.google.gson.JsonObject;
 import me.j0keer.mediaplayer.MediaPlayer;
-import me.j0keer.mediaplayer.netty.FriendlyByteBuf;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -10,7 +9,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
@@ -56,8 +54,8 @@ public record VideoCMD(MediaPlayer plugin) implements CommandExecutor, TabComple
             String url = strings[2];
             String fallback = "";
             int volume = 50;
-            int fadeIn = 0;
-            int fadeOut = 0;
+            int fadeIn = 1;
+            int fadeOut = 1;
             boolean loop = false;
 
             Vector<String> vector = new Vector<>(Arrays.stream(strings).toList());
@@ -183,7 +181,7 @@ public record VideoCMD(MediaPlayer plugin) implements CommandExecutor, TabComple
                 return true;
             }
             int volume = 0;
-            int fadeTime = 0;
+            int fadeTime = 1;
 
             Vector<String> vector = new Vector<>(Arrays.stream(strings).toList());
             vector.remove(0);
@@ -297,50 +295,28 @@ public record VideoCMD(MediaPlayer plugin) implements CommandExecutor, TabComple
     }
 
     public void playVideo(Player player, JsonObject json){
-        FriendlyByteBuf buf = new FriendlyByteBuf();
-        try {
-            buf.writeUtf(json.toString());
-            player.sendPluginMessage(plugin, "mediaplayer:networking", buf.array());
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            buf.clear();
-        }
+        json.addProperty("action", "play");
+        player.sendMessage("[mediaplayer] " + json);
     }
 
     public void pauseVideo(Player player) {
-        FriendlyByteBuf buf = new FriendlyByteBuf();
-        try {
-            buf.writeUtf("pause please");
-            player.sendPluginMessage(plugin, "mediaplayer:pausecin", buf.array());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        JsonObject json = new JsonObject();
+        json.addProperty("action", "pause");
+        player.sendMessage("[mediaplayer] " + json);
     }
 
     public void stopVideo(Player player){
-        FriendlyByteBuf buf = new FriendlyByteBuf();
-        try {
-            buf.writeUtf("stop please");
-            player.sendPluginMessage(plugin, "mediaplayer:unshow", buf.array());
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            buf.clear();
-        }
+        JsonObject json = new JsonObject();
+        json.addProperty("action", "stop");
+        player.sendMessage("[mediaplayer] " + json);
     }
 
     public void volume(Player p, int volume, double time){
-        FriendlyByteBuf buf = new FriendlyByteBuf();
-        try {
-            buf.writeInt(volume);
-            buf.writeDouble(time);
-            p.sendPluginMessage(plugin, "mediaplayer:volume", buf.array());
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            buf.clear();
-        }
+        JsonObject json = new JsonObject();
+        json.addProperty("volume", volume);
+        json.addProperty("time", time);
+        json.addProperty("action", "volume");
+        p.sendMessage("[mediaplayer] " + json);
     }
 
     public ConfigurationSection getFile(){
