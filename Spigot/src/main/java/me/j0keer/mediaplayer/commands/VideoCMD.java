@@ -19,6 +19,10 @@ public record VideoCMD(MediaPlayer plugin) implements CommandExecutor, TabComple
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
+        if (!commandSender.hasPermission("mediaplayer.admin")) {
+            sendMSG(commandSender, "{prefix}No tienes permiso para ejecutar este comando.");
+            return true;
+        }
         if (strings.length == 0){
             sendMSG(commandSender, "§cUsa /video <play|stop|volume> <fadeIn> <fadeOut> <volume> <url>");
             return true;
