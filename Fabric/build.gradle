@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.8-SNAPSHOT'
+    id 'fabric-loom' version '1.10-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -30,12 +30,12 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    implementation "com.github.WaterMediaTeam.watermedia:build:$watermedia_version"
+    modImplementation "curse.maven:watermedia-869524:${watermedia_version}"
 }
 
 processResources {
     inputs.property "version", mod_version
-    inputs.property "watermedia_version", watermedia_version
+    inputs.property "watermedia_version", watermedia_mod_version
     inputs.property "minecraft_version", minecraft_version
     inputs.property "fabric_version", fabric_version
     inputs.property "loader_version", loader_version
@@ -44,7 +44,7 @@ processResources {
     filteringCharset "UTF-8"
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version, "minecraft_version": minecraft_version, "fabric_version": fabric_version, "loader_version": loader_version, "watermedia_version": watermedia_version, "mod_id": mod_id, "mod_name": mod_name
+        expand "version": project.version, "minecraft_version": minecraft_version, "fabric_version": fabric_version, "loader_version": loader_version, "watermedia_version": watermedia_mod_version, "mod_id": mod_id, "mod_name": mod_name
     }
 }
 

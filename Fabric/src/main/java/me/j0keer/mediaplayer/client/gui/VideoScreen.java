@@ -3,9 +3,6 @@ package me.j0keer.mediaplayer.client.gui;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.lib720.caprica.vlcj.player.base.State;
-import me.srrapero720.watermedia.api.math.MathAPI;
-import me.srrapero720.watermedia.api.player.SyncVideoPlayer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -19,6 +16,9 @@ import me.j0keer.mediaplayer.Main;
 import me.j0keer.mediaplayer.client.ClientHandler;
 import me.j0keer.mediaplayer.util.KeyBinding;
 import me.j0keer.mediaplayer.util.URLFixer;
+import org.watermedia.api.math.MathAPI;
+import org.watermedia.api.player.videolan.VideoPlayer;
+import org.watermedia.videolan4j.player.base.State;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -31,7 +31,7 @@ public class VideoScreen extends Screen {
         FORMAT.setTimeZone(TimeZone.getTimeZone("GMT-00:00"));
     }
 
-    private final SyncVideoPlayer player;
+    private final VideoPlayer player;
     private boolean activeFadeIn = false;
     private final long fadeIn;
     private boolean activeFadeOut = false;
@@ -93,7 +93,7 @@ public class VideoScreen extends Screen {
 
         mc.options.getSoundVolumeOption(SoundCategory.MASTER).setValue(0.001);
 
-        this.player = new SyncVideoPlayer(mc);
+        this.player = new VideoPlayer(mc);
         setVolume(activeFadeIn ? 0 : volume);
         player.start(URLFixer.fix(json.get("url").getAsString(), json.get("fallback").getAsString(), URLFixer.MediaType.VIDEO));
 
@@ -131,9 +131,10 @@ public class VideoScreen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta){
         if (!started) return;
 
-        videoTexture = player.prepareTexture();
+        videoTexture = player.preRender();
+        String state = player != null && player.raw() != null ? player.raw().mediaPlayer().status().state().toString() : "NOTHING_SPECIAL";
 
-        if (player.isEnded() || player.isStopped() || player.getRawPlayerState().equals(State.ERROR)) {
+        if (player.isEnded() || player.isStopped() || state.equals("ERROR")) {
             if (fadeLevel == 1 || closing) {
                 closing = true;
                 if (closingOnTick == -1) closingOnTick = tick + 20;
@@ -144,7 +145,7 @@ public class VideoScreen extends Screen {
             }
         }
 
-        boolean playingState = player.isPlaying() && player.getRawPlayerState().equals(State.PLAYING);
+        boolean playingState = player.isPlaying() && state.equals("PLAYING");
         fadeLevel = (playingState) ? Math.max(fadeLevel - (delta / 8), 0.0f) : Math.min(fadeLevel + (delta / 16), 1.0f);
         if (playingState || player.isStopped() || player.isEnded()) {
             renderTexture(context, videoTexture);
@@ -152,7 +153,9 @@ public class VideoScreen extends Screen {
 
         // DEBUG RENDERING
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
-            draw(context, String.format("State: %s", player.getRawPlayerState().name()), getHeightCenter(-12));
+            if (player.raw() != null) {
+                draw(context, String.format("State: %s", state), getHeightCenter(-12));
+            }
             draw(context, String.format("Time: %s (%s) / %s (%s)", FORMAT.format(new Date(player.getTime())), player.getTime(), FORMAT.format(new Date(player.getDuration())), player.getDuration()), getHeightCenter(0));
             draw(context, String.format("Media Duration: %s (%s)", FORMAT.format(new Date(player.getMediaInfoDuration())), player.getMediaInfoDuration()), getHeightCenter(12));
         }
@@ -173,7 +176,7 @@ public class VideoScreen extends Screen {
     }
 
     private void renderTexture(DrawContext guiGraphics, int texture) {
-        if (player.getDimensions() == null) return; // Checking if video available
+        if (player.dimension() == null) return; // Checking if video available
 
         RenderSystem.enableBlend();
         guiGraphics.fill(0, 0, width, height, MathAPI.argb(255, 0, 0, 0));

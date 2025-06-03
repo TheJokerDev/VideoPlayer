@@ -1,13 +1,13 @@
 package me.j0keer.mediaplayer.util;
 
 import java.io.File;
+import java.net.URI;
 
 public class URLFixer {
     public enum MediaType {
-        AUDIO,
         VIDEO
     }
-    public static String fix(String in, String fallback, MediaType type) {
+    public static URI fix(String in, String fallback, MediaType type) {
         boolean isLocal = in.startsWith("{local}/");
         boolean isFile = in.startsWith("{file}/");
 
@@ -17,9 +17,11 @@ public class URLFixer {
                 return fix(fallback, null, type);
             }
 
-            String path = "{local}/" + file.getAbsolutePath();
-            path = path.replace("{local}/", "local://");
-            return path;
+            if (!file.exists()) {
+                return null;
+            }
+
+            return file.toURI();
         }
 
         if (isFile) {
@@ -28,11 +30,18 @@ public class URLFixer {
                 return fix(fallback, null, type);
             }
 
-            String path = "{file}/" + file.getAbsolutePath();
-            path = path.replace("{file}/", "local://");
-            return path;
+            if (!file.exists()) {
+                return null;
+            }
+
+            return file.toURI();
         }
 
-        return in;
+        return URI.create(fix(in));
+    }
+
+    public static String fix(String in) {
+        // Replace \ with /
+        return in.replace("\\", "/");
     }
 }
