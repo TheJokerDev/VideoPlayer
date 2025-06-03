@@ -1,8 +1,9 @@
 name: CI
 
 on: [push]
+
 permissions:
-  contents: write
+  contents: write  # Necesario para crear/borrar releases y tags
 
 jobs:
   build:
@@ -34,6 +35,29 @@ jobs:
           version=$(grep "mod_version" gradle.properties | cut -d'=' -f2 | tr -d '[:space:]')
           echo "VERSION=$version" >> $GITHUB_ENV
           echo "::set-output name=version::$version"
+
+      - name: Delete existing release if it exists
+        run: |
+          TAG="v${{ steps.get_version.outputs.version }}"
+          
+          # Elimina el release si existe
+          release_id=$(gh release view "$TAG" --json id -q ".id" || echo "")
+          if [ -n "$release_id" ]; then
+            echo "Release $TAG found. Deleting..."
+            gh release delete "$TAG" -y
+          else
+            echo "No release found for $TAG."
+          fi
+
+          # Elimina el tag si existe
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG found. Deleting..."
+            git push origin --delete "$TAG"
+          else
+            echo "No tag $TAG found."
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.JAVA_TOKEN }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
